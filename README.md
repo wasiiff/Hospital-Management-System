@@ -12,6 +12,14 @@ prescriptions, billing, and payments across three user roles.
 | **Receptionist** | Register / update / search / delete patients, schedule & cancel appointments, generate bills, record payments |
 | **Doctor** | View own appointments, add prescriptions, update treatment status, view patient medical history |
 
+## Localization
+
+This version is **localized for Pakistan** with:
+- Pakistani doctor and patient names
+- Pakistani addresses (Lahore, Karachi, Islamabad)
+- Pakistani phone numbers (03XX format)
+- **Currency: Pakistani Rupee (₨)** — consultation fees and medicine prices in PKR
+
 ## Database
 
 The entire schema lives in [`database/hms.sql`](database/hms.sql).
@@ -44,25 +52,33 @@ The entire schema lives in [`database/hms.sql`](database/hms.sql).
 ## Setup
 
 1. Install **XAMPP** and start **Apache** + **MySQL**.
-2. Import the database — either:
-   - phpMyAdmin → Import → choose `database/hms.sql`, **or**
-   - command line: `mysql -u root -p < database/hms.sql`
+2. Copy this project into XAMPP's `htdocs/` (e.g. `htdocs/hms`).
+3. Import the database — the SQL file automatically drops and recreates the `hms` database:
+   - **phpMyAdmin:** 
+     - Go to `http://localhost/phpmyadmin`
+     - Click "Import" tab
+     - Choose `database/hms.sql` from this project
+     - Click "Go"
+   - **Command line:** 
+     ```bash
+     mysql -u root -p < database/hms.sql
+     # (press Enter for blank password, or enter your MySQL password)
+     ```
 
-   The script drops and recreates the `hms` database, including all views,
-   procedures, triggers, and sample data.
-3. Copy this project into XAMPP's `htdocs/` (e.g. `htdocs/hms`).
-4. If your MySQL credentials differ from the XAMPP default, edit
-   [`config/database.php`](config/database.php).
-5. Open `http://localhost/hms/` in a browser.
+   The script includes all views, procedures, triggers, and sample Pakistani seed data.
+
+4. If your MySQL credentials differ from the XAMPP default (`root` / blank password),
+   edit [`config/database.php`](config/database.php).
+5. Open `http://localhost/hms/` in a browser and log in with a demo account (see below).
 
 ## Demo accounts
 
-| Role | Username | Password |
-|------|----------|----------|
-| Administrator | `admin` | `admin123` |
-| Receptionist | `reception` | `reception123` |
-| Doctor | `ashok` | `doctor123` |
-| Doctor | `ganesh` | `doctor123` |
+| Role | Username | Password | Notes |
+|------|----------|----------|-------|
+| Administrator | `admin` | `admin123` | Full system access |
+| Receptionist | `reception` | `reception123` | Patient & appointment management |
+| Doctor | `hassan` | `doctor123` | Dr. Muhammad Hassan (Cardiologist) |
+| Doctor | `hasan_raza` | `doctor123` | Dr. Hassan Raza (Pediatrician) |
 
 Passwords are stored as SHA2-256 hashes in the `Users` table.
 
