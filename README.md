@@ -80,6 +80,11 @@ The entire schema lives in [`database/hms.sql`](database/hms.sql).
    edit [`config/database.php`](config/database.php).
 5. Open `http://localhost/hms/` in a browser and log in with a demo account (see below).
 
+## Testing
+
+There is no automated test runner — this is a database-focused project with no build
+step. Verify changes manually in the browser using the demo accounts below.
+
 ## Demo accounts
 
 | Role | Username | Password | Notes |
