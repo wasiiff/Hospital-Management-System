@@ -70,7 +70,7 @@ $cssVer  = is_file($cssPath) ? filemtime($cssPath) : time();
             <div class="hms-brand-sub">Management System</div>
         </div>
     </div>
-
+    
     <div class="menu-label">Main Menu</div>
     <ul class="nav flex-column">
         <?php foreach ($nav as $label => [$path, $icon]):
