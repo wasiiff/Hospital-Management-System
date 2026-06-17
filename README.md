@@ -49,6 +49,15 @@ The entire schema lives in [`database/hms.sql`](database/hms.sql).
 - **PHP 8** with **PDO** and prepared statements
 - **Bootstrap 5** (CDN) for the UI
 
+## Security
+
+- **No raw SQL from string interpolation** — every database operation goes through
+  prepared statements (or `CALL` for stored procedures) in `includes/functions.php`.
+- **Role-based access control** — each protected page calls `requireRole([...])` at the
+  top, driven by the logged-in user's role.
+- **Hashed credentials** — user passwords are stored as SHA2-256 hashes, never plaintext.
+- **Output escaping** — values rendered into HTML are escaped via the `e()` helper.
+
 ## Setup
 
 1. Install **XAMPP** and start **Apache** + **MySQL**.
