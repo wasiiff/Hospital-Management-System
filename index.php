@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <div class="demo-box mt-4">
-            <div class="fw-bold mb-2"><i class="bi bi-info-circle"></i> Demo accounts</div>
+            <div class="fw-bold mb-2"><i class="bi bi-info-circle"></i> Demo Accounts Passwords</div>
             <div class="d-flex justify-content-between"><span class="text-muted">Administrator</span> <code>admin / admin123</code></div>
             <div class="d-flex justify-content-between"><span class="text-muted">Receptionist</span> <code>reception / reception123</code></div>
             <div class="d-flex justify-content-between"><span class="text-muted">Doctor</span> <code>hassan / doctor123</code></div>

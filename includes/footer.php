@@ -1,5 +1,5 @@
     <footer class="hms-footer text-center">
-        <i class="bi bi-heart-pulse"></i> Hospital Management System
+        <i class="bi bi-heart-pulse"></i> Hospital Management System.
     </footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
