@@ -18,71 +18,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $bills = getBills();
 
 $pageTitle = 'Billing & Payments';
+$pageIcon  = 'receipt';
+$pageSub   = 'Generate bills and record patient payments';
 $base = '../';
 require __DIR__ . '/../includes/header.php';
 ?>
-<?php if ($msg): ?><div class="alert alert-success py-2"><?= e($msg) ?></div><?php endif; ?>
+<?php if ($msg): ?><div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> <?= e($msg) ?></div><?php endif; ?>
 
-<div class="card p-3">
-    <h6>Bills</h6>
-    <table class="table table-sm table-hover align-middle">
+<div class="card p-3 p-md-4">
+    <h6><i class="bi bi-receipt-cutoff text-primary"></i> Bills <span class="badge bg-light text-muted ms-1"><?= count($bills) ?></span></h6>
+    <div class="table-responsive">
+    <table class="table table-hover align-middle">
         <thead>
-            <tr><th>Bill</th><th>Patient</th><th>Appt</th><th>Amount</th><th>Paid</th><th>Status</th><th>Actions</th></tr>
+            <tr><th>Bill</th><th>Patient</th><th>Appt</th><th>Amount</th><th>Paid</th><th>Status</th><th class="text-end">Actions</th></tr>
         </thead>
         <tbody>
         <?php foreach ($bills as $b): ?>
             <tr>
-                <td><?= e($b['bill_id']) ?></td>
+                <td class="fw-semibold">#<?= e($b['bill_id']) ?></td>
                 <td><?= e($b['patient_name']) ?></td>
-                <td><?= e($b['appointment_id']) ?></td>
-                <td>₨<?= e(number_format($b['amount'], 2)) ?></td>
+                <td><?= $b['appointment_id'] ? '#' . e($b['appointment_id']) : '<span class="text-muted">—</span>' ?></td>
+                <td class="fw-semibold">₨<?= e(number_format($b['amount'], 2)) ?></td>
                 <td>₨<?= e(number_format($b['paid'], 2)) ?></td>
                 <td>
                     <?php
-                    $cls = ['Paid' => 'success', 'Partial' => 'warning', 'Pending' => 'secondary'][$b['payment_status']];
+                    $cls  = ['Paid' => 'success', 'Partial' => 'warning', 'Pending' => 'secondary'][$b['payment_status']];
+                    $icon = ['Paid' => 'check-circle', 'Partial' => 'hourglass-split', 'Pending' => 'clock'][$b['payment_status']];
                     ?>
-                    <span class="badge bg-<?= $cls ?>"><?= e($b['payment_status']) ?></span>
+                    <span class="badge rounded-pill bg-<?= $cls ?>"><i class="bi bi-<?= $icon ?>"></i> <?= e($b['payment_status']) ?></span>
                 </td>
-                <td class="text-nowrap">
+                <td class="text-nowrap text-end">
                     <?php if ($b['appointment_id']): ?>
                         <form method="post" class="d-inline">
                             <input type="hidden" name="action" value="generate">
                             <input type="hidden" name="appointment_id" value="<?= e($b['appointment_id']) ?>">
-                            <button class="btn btn-outline-secondary btn-sm" title="Recalculate via GenerateBill()">Regenerate</button>
+                            <button class="btn btn-outline-secondary btn-sm" title="Recalculate via GenerateBill()"><i class="bi bi-arrow-repeat"></i> Regenerate</button>
                         </form>
                     <?php endif; ?>
                     <?php if ($b['payment_status'] !== 'Paid'): ?>
-                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#pay<?= e($b['bill_id']) ?>">Pay</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#pay<?= e($b['bill_id']) ?>"><i class="bi bi-cash"></i> Pay</button>
                     <?php endif; ?>
                 </td>
             </tr>
             <?php if ($b['payment_status'] !== 'Paid'): ?>
             <tr class="collapse" id="pay<?= e($b['bill_id']) ?>">
-                <td colspan="7">
+                <td colspan="7" class="bg-light">
                     <form method="post" class="row g-2 align-items-end">
                         <input type="hidden" name="action" value="pay">
                         <input type="hidden" name="bill_id" value="<?= e($b['bill_id']) ?>">
                         <div class="col-auto">
-                            <label class="form-label small">Amount</label>
+                            <label class="form-label small">Amount (₨)</label>
                             <input type="number" step="0.01" name="amount_paid" class="form-control form-control-sm"
                                    value="<?= e(number_format(max(0, $b['amount'] - $b['paid']), 2, '.', '')) ?>" required>
                         </div>
                         <div class="col-auto">
                             <label class="form-label small">Method</label>
                             <select name="payment_method" class="form-select form-select-sm">
-                                <option>Cash</option><option>Card</option><option>UPI</option><option>Insurance</option>
+                                <option>Cash</option><option>Card</option><option>Easypaisa</option><option>JazzCash</option><option>Insurance</option>
                             </select>
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-primary btn-sm">Record Payment</button>
+                            <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg"></i> Record Payment</button>
                         </div>
                     </form>
                 </td>
             </tr>
             <?php endif; ?>
         <?php endforeach; ?>
-        <?php if (!$bills): ?><tr><td colspan="7" class="text-muted">No bills yet.</td></tr><?php endif; ?>
+        <?php if (!$bills): ?><tr><td colspan="7" class="empty-row"><i class="bi bi-receipt"></i> No bills yet.</td></tr><?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

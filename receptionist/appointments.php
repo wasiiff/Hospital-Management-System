@@ -28,16 +28,20 @@ $doctors  = getDoctors();
 $schedule = getDoctorSchedule();
 
 $pageTitle = 'Appointments';
+$pageIcon  = 'calendar2-check';
+$pageSub   = 'Book appointments and view the schedule';
 $base = '../';
 require __DIR__ . '/../includes/header.php';
+
+$statusBadge = ['Scheduled' => 'primary', 'Completed' => 'success', 'Cancelled' => 'danger'];
 ?>
-<?php if ($msg): ?><div class="alert alert-success py-2"><?= e($msg) ?></div><?php endif; ?>
-<?php if ($err): ?><div class="alert alert-danger py-2"><?= e($err) ?></div><?php endif; ?>
+<?php if ($msg): ?><div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> <?= e($msg) ?></div><?php endif; ?>
+<?php if ($err): ?><div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> <?= e($err) ?></div><?php endif; ?>
 
 <div class="row g-4">
     <div class="col-md-4">
-        <div class="card p-3">
-            <h6>Book Appointment</h6>
+        <div class="card p-3 p-md-4">
+            <h6><i class="bi bi-calendar-plus text-primary"></i> Book Appointment</h6>
             <form method="post">
                 <div class="mb-2">
                     <label class="form-label">Patient</label>
@@ -65,36 +69,40 @@ require __DIR__ . '/../includes/header.php';
                     <label class="form-label">Time</label>
                     <input type="time" name="appointment_time" class="form-control" required>
                 </div>
-                <button class="btn btn-primary btn-sm">Book (via BookAppointment)</button>
+                <button class="btn btn-primary btn-sm w-100"><i class="bi bi-calendar-check"></i> Book Appointment</button>
+                <div class="text-muted small mt-2"><i class="bi bi-info-circle"></i> A bill is auto-generated via the database trigger.</div>
             </form>
         </div>
     </div>
     <div class="col-md-8">
-        <div class="card p-3">
-            <h6>Schedule</h6>
-            <table class="table table-sm table-hover align-middle">
-                <thead><tr><th>#</th><th>Doctor</th><th>Patient</th><th>Date/Time</th><th>Status</th><th></th></tr></thead>
+        <div class="card p-3 p-md-4">
+            <h6><i class="bi bi-calendar3 text-primary"></i> Schedule</h6>
+            <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>#</th><th>Doctor</th><th>Patient</th><th>Date/Time</th><th>Status</th><th class="text-end"></th></tr></thead>
                 <tbody>
                 <?php foreach ($schedule as $s): ?>
                     <tr>
-                        <td><?= e($s['appointment_id']) ?></td>
+                        <td class="fw-semibold">#<?= e($s['appointment_id']) ?></td>
                         <td><?= e($s['doctor_name']) ?></td>
                         <td><?= e($s['patient_name']) ?></td>
                         <td><?= e($s['appointment_date']) ?></td>
-                        <td><span class="badge bg-secondary"><?= e($s['status']) ?></span></td>
-                        <td>
+                        <td><span class="badge rounded-pill bg-<?= $statusBadge[$s['status']] ?? 'secondary' ?>"><?= e($s['status']) ?></span></td>
+                        <td class="text-end">
                             <?php if ($s['status'] !== 'Cancelled'): ?>
                                 <form method="post" class="d-inline" onsubmit="return confirm('Cancel this appointment?');">
                                     <input type="hidden" name="action" value="cancel">
                                     <input type="hidden" name="appointment_id" value="<?= e($s['appointment_id']) ?>">
-                                    <button class="btn btn-outline-danger btn-sm">Cancel</button>
+                                    <button class="btn btn-outline-danger btn-sm"><i class="bi bi-x-lg"></i> Cancel</button>
                                 </form>
                             <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
+                <?php if (!$schedule): ?><tr><td colspan="6" class="empty-row"><i class="bi bi-calendar-x"></i> No appointments scheduled.</td></tr><?php endif; ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

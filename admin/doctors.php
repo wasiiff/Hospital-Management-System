@@ -26,15 +26,17 @@ $doctors     = getDoctors();
 $edit        = isset($_GET['edit']) ? getDoctor((int) $_GET['edit']) : null;
 
 $pageTitle = 'Doctors';
+$pageIcon  = 'person-badge';
+$pageSub   = 'Add doctors and assign them to departments';
 $base = '../';
 require __DIR__ . '/../includes/header.php';
 ?>
-<?php if ($msg): ?><div class="alert alert-success py-2"><?= e($msg) ?></div><?php endif; ?>
+<?php if ($msg): ?><div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> <?= e($msg) ?></div><?php endif; ?>
 
 <div class="row g-4">
     <div class="col-md-4">
-        <div class="card p-3">
-            <h6><?= $edit ? 'Edit Doctor' : 'Add Doctor' ?></h6>
+        <div class="card p-3 p-md-4">
+            <h6><i class="bi bi-<?= $edit ? 'pencil-square' : 'plus-circle' ?> text-primary"></i> <?= $edit ? 'Edit Doctor' : 'Add Doctor' ?></h6>
             <form method="post">
                 <input type="hidden" name="doctor_id" value="<?= e($edit['doctor_id'] ?? '') ?>">
                 <div class="mb-2">
@@ -65,32 +67,35 @@ require __DIR__ . '/../includes/header.php';
                     <input type="number" step="0.01" name="consultation_fee" class="form-control"
                            value="<?= e($edit['consultation_fee'] ?? '') ?>" required>
                 </div>
-                <button class="btn btn-primary btn-sm"><?= $edit ? 'Update' : 'Add' ?></button>
+                <button class="btn btn-primary btn-sm"><i class="bi bi-<?= $edit ? 'check-lg' : 'plus-lg' ?>"></i> <?= $edit ? 'Update' : 'Add Doctor' ?></button>
                 <?php if ($edit): ?><a class="btn btn-link btn-sm" href="doctors.php">Cancel</a><?php endif; ?>
             </form>
         </div>
     </div>
     <div class="col-md-8">
-        <div class="card p-3">
-            <h6>All Doctors</h6>
-            <table class="table table-sm table-hover align-middle">
+        <div class="card p-3 p-md-4">
+            <h6><i class="bi bi-people-fill text-primary"></i> All Doctors <span class="badge bg-light text-muted ms-1"><?= count($doctors) ?></span></h6>
+            <div class="table-responsive">
+            <table class="table table-hover align-middle">
                 <thead>
-                    <tr><th>ID</th><th>Name</th><th>Specialty</th><th>Department</th><th>Phone</th><th>Fee</th><th></th></tr>
+                    <tr><th>ID</th><th>Name</th><th>Specialty</th><th>Department</th><th>Phone</th><th>Fee</th><th class="text-end"></th></tr>
                 </thead>
                 <tbody>
                 <?php foreach ($doctors as $d): ?>
                     <tr>
-                        <td><?= e($d['doctor_id']) ?></td>
+                        <td class="fw-semibold">#<?= e($d['doctor_id']) ?></td>
                         <td><?= e($d['name']) ?></td>
-                        <td><?= e($d['specialty']) ?></td>
+                        <td><span class="badge bg-primary-subtle text-primary-emphasis"><?= e($d['specialty']) ?></span></td>
                         <td><?= e($d['department_name']) ?></td>
                         <td><?= e($d['phone']) ?></td>
-                        <td>₨<?= e(number_format($d['consultation_fee'], 2)) ?></td>
-                        <td><a class="btn btn-outline-secondary btn-sm" href="?edit=<?= e($d['doctor_id']) ?>">Edit</a></td>
+                        <td class="fw-semibold">₨<?= e(number_format($d['consultation_fee'], 2)) ?></td>
+                        <td class="text-end"><a class="btn btn-outline-secondary btn-sm" href="?edit=<?= e($d['doctor_id']) ?>"><i class="bi bi-pencil"></i> Edit</a></td>
                     </tr>
                 <?php endforeach; ?>
+                <?php if (!$doctors): ?><tr><td colspan="7" class="empty-row"><i class="bi bi-person-x"></i> No doctors yet.</td></tr><?php endif; ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

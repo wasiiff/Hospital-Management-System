@@ -77,6 +77,19 @@ function addDepartment(string $name, ?string $description): void
     $stmt->execute([$name, $description]);
 }
 
+function getDepartment(int $id): ?array
+{
+    $stmt = db()->prepare('SELECT * FROM Departments WHERE department_id = ?');
+    $stmt->execute([$id]);
+    return $stmt->fetch() ?: null;
+}
+
+function updateDepartment(int $id, string $name, ?string $description): void
+{
+    $stmt = db()->prepare('UPDATE Departments SET name = ?, description = ? WHERE department_id = ?');
+    $stmt->execute([$name, $description, $id]);
+}
+
 function getDoctors(): array
 {
     return db()->query(
