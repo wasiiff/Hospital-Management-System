@@ -61,7 +61,7 @@ require __DIR__ . '/../includes/header.php';
                     </select>
                 </div>
                 <div class="mb-2">
-                    <label class="form-label">Consultation Fee (₹)</label>
+                    <label class="form-label">Consultation Fee (₨)</label>
                     <input type="number" step="0.01" name="consultation_fee" class="form-control"
                            value="<?= e($edit['consultation_fee'] ?? '') ?>" required>
                 </div>
@@ -85,7 +85,7 @@ require __DIR__ . '/../includes/header.php';
                         <td><?= e($d['specialty']) ?></td>
                         <td><?= e($d['department_name']) ?></td>
                         <td><?= e($d['phone']) ?></td>
-                        <td>₹<?= e(number_format($d['consultation_fee'], 2)) ?></td>
+                        <td>₨<?= e(number_format($d['consultation_fee'], 2)) ?></td>
                         <td><a class="btn btn-outline-secondary btn-sm" href="?edit=<?= e($d['doctor_id']) ?>">Edit</a></td>
                     </tr>
                 <?php endforeach; ?>

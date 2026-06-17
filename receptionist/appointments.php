@@ -53,7 +53,7 @@ require __DIR__ . '/../includes/header.php';
                     <select name="doctor_id" class="form-select" required>
                         <option value="" disabled selected>Select doctor</option>
                         <?php foreach ($doctors as $d): ?>
-                            <option value="<?= e($d['doctor_id']) ?>"><?= e($d['name']) ?> &mdash; <?= e($d['specialty']) ?> (₹<?= e(number_format($d['consultation_fee'], 0)) ?>)</option>
+                            <option value="<?= e($d['doctor_id']) ?>"><?= e($d['name']) ?> &mdash; <?= e($d['specialty']) ?> (₨<?= e(number_format($d['consultation_fee'], 0)) ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>

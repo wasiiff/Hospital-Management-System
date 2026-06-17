@@ -271,35 +271,35 @@ INSERT INTO Departments(name, description) VALUES
     ('Pediatrics',  'Medical care of infants and children');
 
 INSERT INTO Doctors(name, specialty, phone, department_id, consultation_fee) VALUES
-    ('Dr. Ashok Goyal',  'Cardiologist',  '9876500001', 1, 800.00),
-    ('Dr. Amit Sharma',  'Cardiologist',  '9876500002', 1, 1000.00),
-    ('Dr. Neha Verma',   'Neurologist',   '9876500003', 2, 1200.00),
-    ('Dr. Ravi Kumar',   'Orthopedic',    '9876500004', 3, 700.00),
-    ('Dr. Ganesh Iyer',  'Pediatrician',  '9876500005', 4, 550.00);
+    ('Dr. Muhammad Hassan',  'Cardiologist',  '03001234501', 1, 3500.00),
+    ('Dr. Fatima Khan',      'Cardiologist',  '03002234502', 1, 4000.00),
+    ('Dr. Ahmed Ali',        'Neurologist',   '03003234503', 2, 4500.00),
+    ('Dr. Ayesha Malik',     'Orthopedic',    '03004234504', 3, 3000.00),
+    ('Dr. Hassan Raza',      'Pediatrician',  '03005234505', 4, 2500.00);
 
 INSERT INTO Patients(name, gender, date_of_birth, contact_number, address) VALUES
-    ('Kishan Lal',      'Male',   '1995-06-12', '8838489464', '12 MG Road, Chennai'),
-    ('Alia Bhatt',      'Female', '1993-03-15', '8976897689', '44 Park Street, Mumbai'),
-    ('William Blake',   'Male',   '1988-11-02', '8683619153', '7 Lake View, Pune'),
-    ('Shraddha Kapoor', 'Female', '1997-09-21', '9768946252', '90 Hill Road, Delhi');
+    ('Muhammad Ali Khan',   'Male',   '1995-06-12', '03001234567', '12 Defence, Lahore'),
+    ('Zainab Ahmed',        'Female', '1993-03-15', '03012234567', '44 Clifton, Karachi'),
+    ('Imran Hassan',        'Male',   '1988-11-02', '03003234567', '7 F-7, Islamabad'),
+    ('Saira Malik',         'Female', '1997-09-21', '03014234567', '90 Gulberg, Lahore');
 
 INSERT INTO Medicines(name, description, price) VALUES
-    ('Paracetamol 500mg', 'Fever and pain relief',         20.00),
-    ('Amoxicillin 250mg', 'Antibiotic',                    85.00),
-    ('Benadryl Syrup',    'Cough suppressant',             110.00),
-    ('Atorvastatin 10mg', 'Cholesterol control',           150.00),
-    ('Ibuprofen 400mg',   'Anti-inflammatory pain relief',  35.00);
+    ('Paracetamol 500mg', 'Fever and pain relief',         150.00),
+    ('Amoxicillin 250mg', 'Antibiotic',                    450.00),
+    ('Benadryl Syrup',    'Cough suppressant',             600.00),
+    ('Atorvastatin 10mg', 'Cholesterol control',           800.00),
+    ('Ibuprofen 400mg',   'Anti-inflammatory pain relief',  250.00);
 
 -- Users (the plaintext password that hashes to each stored SHA2-256 value):
 --   admin       / admin123
 --   reception   / reception123
---   ashok       / doctor123   (-> Dr. Ashok Goyal, doctor_id 1)
---   ganesh      / doctor123   (-> Dr. Ganesh Iyer,  doctor_id 5)
+--   hassan      / doctor123   (-> Dr. Muhammad Hassan, doctor_id 1)
+--   hasan_raza  / doctor123   (-> Dr. Hassan Raza, doctor_id 5)
 INSERT INTO Users(username, password, role, doctor_id) VALUES
     ('admin',     SHA2('admin123', 256),     'admin',        NULL),
     ('reception', SHA2('reception123', 256), 'receptionist', NULL),
-    ('ashok',     SHA2('doctor123', 256),    'doctor',       1),
-    ('ganesh',    SHA2('doctor123', 256),    'doctor',       5);
+    ('hassan',    SHA2('doctor123', 256),    'doctor',       1),
+    ('hasan_raza', SHA2('doctor123', 256),   'doctor',       5);
 
 -- Appointments — each INSERT fires prevent_appointment_conflict (BEFORE)
 -- and auto_generate_bill (AFTER), so Bills rows are created automatically.

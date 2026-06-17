@@ -15,7 +15,7 @@ require __DIR__ . '/../includes/header.php';
         ['Doctors', $stats['doctors']],
         ['Departments', $stats['departments']],
         ['Appointments', $stats['appointments']],
-        ['Revenue Collected', '₹ ' . number_format($stats['revenue'], 2)],
+        ['Revenue Collected', '₨ ' . number_format($stats['revenue'], 2)],
     ];
     foreach ($cards as [$label, $value]): ?>
         <div class="col-md-3">

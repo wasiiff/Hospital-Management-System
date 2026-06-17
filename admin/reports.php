@@ -19,7 +19,7 @@ require __DIR__ . '/../includes/header.php';
             <tr>
                 <td><?= e($r['revenue_month']) ?></td>
                 <td><?= e($r['total_payments']) ?></td>
-                <td>₹<?= e(number_format($r['total_revenue'], 2)) ?></td>
+                <td>₨<?= e(number_format($r['total_revenue'], 2)) ?></td>
             </tr>
         <?php endforeach; ?>
         <?php if (!$revenue): ?><tr><td colspan="3" class="text-muted">No payments recorded yet.</td></tr><?php endif; ?>

@@ -35,8 +35,8 @@ require __DIR__ . '/../includes/header.php';
                 <td><?= e($b['bill_id']) ?></td>
                 <td><?= e($b['patient_name']) ?></td>
                 <td><?= e($b['appointment_id']) ?></td>
-                <td>₹<?= e(number_format($b['amount'], 2)) ?></td>
-                <td>₹<?= e(number_format($b['paid'], 2)) ?></td>
+                <td>₨<?= e(number_format($b['amount'], 2)) ?></td>
+                <td>₨<?= e(number_format($b['paid'], 2)) ?></td>
                 <td>
                     <?php
                     $cls = ['Paid' => 'success', 'Partial' => 'warning', 'Pending' => 'secondary'][$b['payment_status']];

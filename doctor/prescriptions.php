@@ -45,7 +45,7 @@ require __DIR__ . '/../includes/header.php';
                     <label class="form-label">Medicine</label>
                     <select name="medicine_id" class="form-select" required>
                         <?php foreach ($medicines as $m): ?>
-                            <option value="<?= e($m['medicine_id']) ?>"><?= e($m['name']) ?> (₹<?= e(number_format($m['price'], 2)) ?>)</option>
+                            <option value="<?= e($m['medicine_id']) ?>"><?= e($m['name']) ?> (₨<?= e(number_format($m['price'], 2)) ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -68,7 +68,7 @@ require __DIR__ . '/../includes/header.php';
                 <thead><tr><th>Name</th><th>Description</th><th>Price</th></tr></thead>
                 <tbody>
                 <?php foreach ($medicines as $m): ?>
-                    <tr><td><?= e($m['name']) ?></td><td><?= e($m['description']) ?></td><td>₹<?= e(number_format($m['price'], 2)) ?></td></tr>
+                    <tr><td><?= e($m['name']) ?></td><td><?= e($m['description']) ?></td><td>₨<?= e(number_format($m['price'], 2)) ?></td></tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>

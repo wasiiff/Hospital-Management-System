@@ -12,7 +12,7 @@ require __DIR__ . '/../includes/header.php';
     <div class="col-md-3"><div class="card stat-card p-3"><div class="text-muted small">Patients</div><div class="value"><?= e($stats['patients']) ?></div></div></div>
     <div class="col-md-3"><div class="card stat-card p-3"><div class="text-muted small">Doctors</div><div class="value"><?= e($stats['doctors']) ?></div></div></div>
     <div class="col-md-3"><div class="card stat-card p-3"><div class="text-muted small">Appointments</div><div class="value"><?= e($stats['appointments']) ?></div></div></div>
-    <div class="col-md-3"><div class="card stat-card p-3"><div class="text-muted small">Revenue</div><div class="value">₹<?= e(number_format($stats['revenue'], 0)) ?></div></div></div>
+    <div class="col-md-3"><div class="card stat-card p-3"><div class="text-muted small">Revenue</div><div class="value">₨<?= e(number_format($stats['revenue'], 0)) ?></div></div></div>
 </div>
 
 <div class="card mt-4 p-3">
