@@ -1,0 +1,79 @@
+:root {
+    --hms-primary: #1c3faa;
+    --hms-primary-dark: #16308a;
+}
+
+body {
+    background: #f4f6fb;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.hms-navbar {
+    background: linear-gradient(90deg, var(--hms-primary), #2a7de1);
+}
+
+.hms-sidebar {
+    background: #fff;
+    min-height: calc(100vh - 56px);
+    border-right: 1px solid #e3e7f0;
+}
+
+.hms-sidebar .nav-link {
+    color: #33415c;
+    border-radius: .5rem;
+    margin-bottom: .15rem;
+}
+
+.hms-sidebar .nav-link:hover,
+.hms-sidebar .nav-link.active {
+    background: var(--hms-primary);
+    color: #fff;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(20, 40, 90, .08);
+    border-radius: .75rem;
+}
+
+.stat-card {
+    border-left: 4px solid var(--hms-primary);
+}
+
+.stat-card .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--hms-primary-dark);
+}
+
+.btn-primary {
+    background: var(--hms-primary);
+    border-color: var(--hms-primary);
+}
+
+.btn-primary:hover {
+    background: var(--hms-primary-dark);
+    border-color: var(--hms-primary-dark);
+}
+
+.table thead {
+    background: #eef2fb;
+}
+
+/* Login page */
+.login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--hms-primary), #2a7de1);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 380px;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .2);
+}

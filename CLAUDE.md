@@ -4,57 +4,82 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A Hospital Management System written in **procedural PHP 7 + MySQL (mysqli) + Bootstrap**. There is no framework, no router, no build step, and no automated tests. Each `.php` file at the repo root is simultaneously a page *and* its own request handler. It is designed to be served by Apache out of XAMPP's `htdocs`.
+A Hospital Management System (academic "MySQL + Database Connectivity" project) built
+with **PHP 8 + PDO + MySQL/MariaDB** and **Bootstrap 5**. The database is the centerpiece:
+9 tables, 3 views, 3 stored procedures, and 2 triggers. Designed to run under XAMPP's
+Apache from `htdocs/`. No framework, no build step, no automated tests.
 
 ## Running it
 
-There is no build/lint/test tooling (`composer.json` is empty; `vendor/` and `TCPDF/` are vendored libraries). To run locally:
+1. Start Apache + MySQL in XAMPP.
+2. Import `database/hms.sql` (phpMyAdmin Import, or `mysql -u root -p < database/hms.sql`).
+   It **drops and recreates** the `hms` database with all schema objects + seed data.
+3. Serve the folder from `htdocs/` and open `http://localhost/<folder>/`.
+4. DB credentials live in **`config/database.php`** (default `root` / no password / db `hms`).
 
-1. Install XAMPP; start Apache + MySQL.
-2. In phpMyAdmin create a database named **`myhmsdb`** and import `myhmsdb.sql` into it.
-3. Copy the project into `htdocs/` and open `localhost/<foldername>` in a browser.
-4. Default admin login: username `admin`, password `admin123` (see `admintb` in `myhmsdb.sql`).
-
-There is no way to run a "single test" — verification is manual through the browser.
+There is no test runner — verify changes manually in the browser. Demo logins are in
+`README.md` (e.g. `admin/admin123`, `reception/reception123`, `ashok/doctor123`).
 
 ## Architecture
 
-### Three roles, dispatched by submit-button name
-The app has three user types — **Patient**, **Doctor**, **Admin** — each with its own login/registration flow. There is no central auth layer. Instead, every handler file branches on which named submit button is present in `$_POST` (e.g. `if(isset($_POST['adsub']))`, `if(isset($_POST['docsub1']))`). Forms `action=` directly to the handler file.
+Three layers, cleanly separated:
 
-Entry points and routing:
-- `index.php` — home page with three tabs; posts patient registration → `func2.php`, doctor login → `func1.php`, admin login → `func3.php`.
-- `index1.php` — patient login page (→ `func.php`).
-- `admin-panel.php` — patient dashboard (book appointment, view history). `admin-panel1.php` — admin dashboard (lists, add doctor, view feedback). The two are near-duplicates of each other.
-- `doctor-panel.php` — doctor dashboard; `prescribe.php` — doctor writes a prescription.
-- `func.php` / `func1.php` / `func2.php` / `func3.php` — form handlers + shared display helpers (`display_docs()`, `display_admin_panel()`). These four are largely copy-pasted variants of each other; the same helper is redefined in several of them.
-- `*search.php` (`search.php`, `appsearch.php`, `doctorsearch.php`, `patientsearch.php`, `messearch.php`) — each renders a results table for one search box.
-- `logout.php` / `logout1.php`, `error*.php` — session teardown and error pages.
+1. **`database/hms.sql`** — the single source of truth for the schema. Object creation
+   order matters and is deliberate: tables → triggers → procedures → views → seed data
+   (seed `INSERT`s into `Appointments` fire the triggers; seed `CALL`s use the procedures).
+   If you add a procedure that seed data calls, define it *before* the seed section.
 
-State is carried in PHP sessions: every handler calls `session_start()` and reads/writes `$_SESSION` (`pid`, `dname`, `username`, etc.). There is no login-guard include actually wired into the panels.
+2. **Connectivity layer** (`config/` + `includes/`):
+   - `config/database.php` — `db()` returns a singleton PDO (exceptions on, real prepares).
+   - `includes/auth.php` — login/session/role logic. Passwords are **SHA2-256** hashes
+     (verified with `hash('sha256', ...)` against the `Users.password` column). Every
+     protected page calls `requireRole([...])` at the top.
+   - `includes/functions.php` — **all** database operations live here as functions using
+     prepared statements and `CALL` for stored procedures. UI pages never write SQL directly.
+     `e()` (HTML-escape) is also defined here.
+   - `includes/header.php` / `footer.php` — shared chrome; the navbar/sidebar is driven by
+     `currentRole()`.
 
-### Database access
-Almost every file opens its own connection inline at the top:
+3. **Role pages** — one folder per role: `admin/`, `receptionist/`, `doctor/`. Each page
+   is a thin controller: handle `$_POST`, call functions, render with the shared header/footer.
+   Pages in these subfolders set `$base = '../'` and include files via `__DIR__` relative paths.
+
+### Page convention (follow this for new pages)
 ```php
-$con = mysqli_connect("localhost","root","","myhmsdb");
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
+requireRole(['receptionist']);          // role guard FIRST
+// ... handle POST, fetch data ...
+$pageTitle = '...'; $base = '../';
+require __DIR__ . '/../includes/header.php';
+// ... HTML ...
+require __DIR__ . '/../includes/footer.php';
 ```
-The credentials and DB name are **hardcoded in each file**, not centralized. When changing DB connection details you must edit every file, not one config.
+`functions.php` must be included before `header.php` because the header uses `e()`.
 
-Note `include/config.php` defines a *different* database (`DB_NAME = 'hms'`) and is **not** the connection the running app uses — it appears to be leftover from the `master/` admin template and is effectively dead. The live schema is `myhmsdb.sql`.
+### Database objects worth knowing
+- **Triggers do real work.** Booking an appointment auto-creates a `Bills` row
+  (`auto_generate_bill`) and a same-doctor/same-time clash is rejected at the DB level
+  (`prevent_appointment_conflict`, raises `SQLSTATE '45000'`). Code that books appointments
+  must catch `PDOException` to surface the conflict (see `receptionist/appointments.php`).
+- **Bill lifecycle:** the trigger seeds a bill with the consultation fee; `GenerateBill()`
+  recomputes `amount = consultation_fee + SUM(prescribed medicine prices)`. So adding a
+  prescription should be followed by `generateBill($appointmentId)` to keep totals correct
+  (the doctor prescriptions page does this).
+- **Payment status** (`Pending`/`Partial`/`Paid`) is computed in PHP in `recordPayment()`
+  by comparing total payments to the bill amount — it is not a trigger.
+- **Views** back the read-heavy screens: `DoctorSchedule` (admin reports / reception
+  schedule), `PatientHistory` (doctor history), `MonthlyRevenue` (admin reports).
 
-### Data model (`myhmsdb.sql`)
-- `patreg` — patients (PK `pid`, auto-increment). Stores `password` and `cpassword` in plaintext.
-- `doctb` — doctors. **Schema drift warning:** the SQL defines `username, password, email, spec, docFees`, but `func.php` inserts `doctb(username,password,email,docFees)` and `func3.php` inserts `doctb(name)` — the insert column lists across handlers do not agree with each other or fully with the schema. Verify the actual columns before writing queries against `doctb`.
-- `appointmenttb` — appointments (PK `ID`). `userStatus` / `doctorStatus` are int flags used to implement appointment cancellation (the "deleted by you" feature described in the README).
-- `prestb` — prescriptions (doctor + patient + appointment snapshot + disease/allergy/prescription text).
-- `admintb` — single admin row. `contact` — feedback/queries from the public contact form.
+## Conventions and cautions
 
-### PDF generation
-`TCPDF/` is the bundled [TCPDF](https://tcpdf.org) library used to generate bill/prescription PDFs. Treat it as a third-party dependency — do not edit it.
-
-## Conventions and cautions when editing
-
-- **This code is intentionally insecure in its current form.** Queries are built by string-interpolating `$_POST`/`$_GET` directly (`"... where email='$email'"`) — SQL injection is pervasive. Passwords are stored and compared in plaintext. The README's "Need to work on" list confirms these are known gaps. When adding or modifying queries, prefer parameterized `mysqli` prepared statements rather than copying the existing interpolation pattern.
-- **Heavy duplication:** the `func*.php` handlers and the two admin panels are copy-paste variants. A change in one often needs to be mirrored in its siblings; check for duplicates before assuming a fix is complete.
-- **HTML is echoed from PHP** as large single-quoted strings inside functions like `display_admin_panel()`, mixed with inline `<?php ?>` in the page files. Match the surrounding style of the file you are editing.
-- CSS/JS assets live in `css/`, `js/`, `assets/`, `plugins/`, `font-awesome/`, `fonts/`, `img/`, `images/`. Bootstrap is mostly pulled from CDNs in the page `<head>`. `master/` is an unused SASS admin-theme template.
+- **Always use prepared statements / the existing `functions.php` helpers.** Do not build
+  SQL by string interpolation. This is a clean rewrite specifically to avoid the SQL-injection
+  patterns of the original project.
+- Calling a stored procedure that returns a result set via PDO requires
+  `$stmt->closeCursor()` after fetching (see `bookAppointment` / `getDoctorAppointments`).
+- Money is `DECIMAL(10,2)`; format for display with `number_format(...)`.
+- A doctor user is linked to a `Doctors` row via `Users.doctor_id`; in code use
+  `currentDoctorId()`. Admin/receptionist users have `doctor_id = NULL`.
+- The `hms` database is dropped and recreated by the SQL file — never put data you want to
+  keep only in the running DB; reflect schema changes in `database/hms.sql`.
